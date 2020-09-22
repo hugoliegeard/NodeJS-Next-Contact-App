@@ -22,7 +22,7 @@ app.engine('hbs', hbs({
 }));
 
 app.set('views', __dirname + '/views');
-app.set('view engine', hbs);
+app.set('view engine', 'hbs');
 
 /**
  * Permet de gérer l'affichage de nos assets
@@ -35,17 +35,29 @@ app.use('/public',
 app.get('/', (req, res) => {
     // res.send('<h1>Hello World !</h1>');
     // res.sendFile(__dirname + '/views/html/index.html');
-    
+    res.render('index');
 });
 
 /** Page Contacts */
 app.get('/contacts', (req, res) => {
-    res.sendFile(__dirname + '/views/html/contacts.html');
+    //res.sendFile(__dirname + '/views/html/contacts.html');
+    res.render('contacts');
+});
+
+/** Page Fiche Contact */
+app.get('/contact', (req, res) => {
+    res.render('contact');
+});
+
+/** Page Ajouter un Contact */
+app.get('/ajouter-un-contact', (req, res) => {
+    res.render('new-contact');
 });
 
 /** Gestion des erreurs 404 **/
 app.use(function(req, res, next) {
-    res.status(404).sendFile(__dirname + '/views/html/error.html')
+    // res.status(404).sendFile(__dirname + '/views/html/error.html')
+    res.status(404).render('error');
 });
 
 /**
