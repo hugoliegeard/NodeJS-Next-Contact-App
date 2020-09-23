@@ -25,34 +25,25 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'hbs');
 
 /**
+ * Récupérer les données POST
+ * https://github.com/expressjs/body-parser
+ */
+const bodyParser = require('body-parser');
+app.use(bodyParser.json()); // Parser le body au format JSON
+app.use(bodyParser.urlencoded({extended: false}));
+
+/**
  * Permet de gérer l'affichage de nos assets
  * https://expressjs.com/fr/starter/static-files.html
  */
 app.use('/public',
     express.static(__dirname + '/public'));
 
-/** Page Accueil */
-app.get('/', (req, res) => {
-    // res.send('<h1>Hello World !</h1>');
-    // res.sendFile(__dirname + '/views/html/index.html');
-    res.render('index');
-});
-
-/** Page Contacts */
-app.get('/contacts', (req, res) => {
-    //res.sendFile(__dirname + '/views/html/contacts.html');
-    res.render('contacts');
-});
-
-/** Page Fiche Contact */
-app.get('/contact', (req, res) => {
-    res.render('contact');
-});
-
-/** Page Ajouter un Contact */
-app.get('/ajouter-un-contact', (req, res) => {
-    res.render('new-contact');
-});
+/**
+ * Mise en Place du Routage
+ */
+const appRouter = require('./src/routes/app-routes');
+app.use('/', appRouter);
 
 /** Gestion des erreurs 404 **/
 app.use(function(req, res, next) {
