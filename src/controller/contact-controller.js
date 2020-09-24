@@ -1,4 +1,5 @@
-const { validationResult } = require('express-validator');
+const {validationResult} = require('express-validator');
+const Contact = require('../models/contact-model');
 
 /**
  * Page Ajouter/Créer un Contact
@@ -22,16 +23,40 @@ exports.create_post = (req, res) => {
 
     // 1. Récupération & Vérification des données
     const body = req.body;
-    console.log(body);
+    // console.log(body);
 
     const errors = validationResult(req);
     console.log(errors);
 
     // 2. Sauvegarde des données dans la base
-    // 3. Notification / Confirmation
-    // 4. Redirection sur la fiche du contact
+    if (errors.isEmpty()) {
 
-    res.end('POST SUBMITED');
+        const contact = new Contact({
+            prenom: body.prenom,
+            nom: body.nom,
+            email: body.email,
+            tel: body.tel,
+        });
+
+        contact.save(err => {
+
+            if (err) console.log(err);
+            // 3. Notification / Confirmation
+            // TODO
+            // 4. Redirection sur la fiche du contact
+            res.redirect('/contacts');
+
+        });
+
+    } else {
+
+        // Si la validation échoue, on transmet les erreurs à la vue
+        res.render('new-contact', {
+            'errors': errors.array(),
+            'body': body
+        });
+
+    }
 };
 
 /**
