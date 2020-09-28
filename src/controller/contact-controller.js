@@ -9,7 +9,9 @@ const Contact = require('../models/contact-model');
  * @param res
  */
 exports.create_get = (req, res) => {
-    res.render('new-contact');
+    res.render('form-contact', {
+        'pageName': 'Ajouter le Contact'
+    });
 };
 
 /**
@@ -42,17 +44,22 @@ exports.create_post = (req, res) => {
 
             if (err) console.log(err);
             // 3. Notification / Confirmation
-            // TODO
+            req.session.sessionFlash = {
+                type: 'alert-success',
+                message: 'Votre contact a bien été ajouté !'
+            };
+
             // 4. Redirection sur la fiche du contact
-            res.redirect('/contacts');
+            res.redirect('/contact/' + contact._id);
 
         });
 
     } else {
 
         // Si la validation échoue, on transmet les erreurs à la vue
-        res.render('new-contact', {
+        res.render('form-contact', {
             'errors': errors.array(),
+            'pageName': 'Ajouter le Contact',
             'body': body
         });
 
@@ -67,7 +74,17 @@ exports.create_post = (req, res) => {
  * @param res
  */
 exports.update_get = (req, res) => {
-    // TODO
+    Contact.findById(req.params.id, (err, contact) => {
+
+        if (err) console.log(err);
+
+        // -- Retour de la vue/page à l'utilisateur
+        res.render('form-contact', {
+            'body' : contact.toJSON(),
+            'pageName': 'Modifier le Contact',
+        });
+
+    });
 };
 
 /**
@@ -78,7 +95,32 @@ exports.update_get = (req, res) => {
  * @param res
  */
 exports.update_post = (req, res) => {
-    // TODO
+    const errors = validationResult(req);
+    if (errors.isEmpty()) {
+
+        // Il n'y a pas d'erreurs, mise à jour du contact dans la base.
+        Contact.findByIdAndUpdate(req.params.id, req.body, (err, contact) => {
+
+            req.session.sessionFlash = {
+                type: 'alert-success',
+                message: 'Votre contact a bien été modifié !'
+            };
+
+            // Redirection sur la fiche contact
+            res.redirect('/contact/' + contact._id);
+
+        });
+
+    } else {
+
+        // Il y a des erreurs, affichage des informations
+        res.render('form-contact', {
+            'body': req.body,
+            'errors' : errors.array(),
+            'pageName': 'Modifier le Contact',
+        });
+
+    }
 };
 
 /**
@@ -87,5 +129,24 @@ exports.update_post = (req, res) => {
  * @param res
  */
 exports.delete = (req, res) => {
-    // TODO
+    Contact.findByIdAndRemove(req.params.id, err => {
+
+        if(err) {
+            // Suppression impossible, une erreur est survenue
+            req.session.sessionFlash = {
+                type: 'alert-danger',
+                message: 'Ooops, suppression impossible !'
+            };
+
+            res.redirect('/contacts');
+        } else {
+            // Suppression effectuée avec succès.
+            req.session.sessionFlash = {
+                type: 'alert-success',
+                message: 'Votre contact a bien été supprimé !'
+            };
+            res.redirect('/contacts');
+        }
+
+    });
 };

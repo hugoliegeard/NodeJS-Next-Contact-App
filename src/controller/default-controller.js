@@ -1,4 +1,6 @@
 const Contact = require('../models/contact-model');
+const qrcode = require('qrcode');
+const {generateVCard} = require('../services/vcard');
 
 /**
  * Page Accueil
@@ -43,7 +45,28 @@ exports.contacts = (req, res) => {
  * @param res
  */
 exports.contact = (req, res) => {
-    // TODO : Récupération des données dans la base
-    // -- Retour de la vue/page à l'utilisateur
-    res.render('contact');
+
+    Contact.findById(req.params.id, (err, data) => {
+
+        if (err) console.log(err);
+        const contact = data.toJSON();
+
+        // Génération de la vCard
+        const vCard = generateVCard(contact);
+
+        // Génération du QrCode
+        qrcode.toDataURL(vCard, (err, image) => {
+
+            // Ajout du qrCode au contact
+            contact.qrcode = image;
+
+            // -- Retour de la vue/page à l'utilisateur
+            res.render('contact', {
+                'contact' : contact,
+            });
+
+        });
+
+    });
+
 };

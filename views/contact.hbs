@@ -1,19 +1,32 @@
 <div class="container">
     <div class="col">
-        <div class="jumbotron mt-4">
-            <h1 class="display-4">John DOE</h1>
-            <p class="lead">john.doe@email.com</p>
-            <p class="lead">00 00 00 00 00</p>
-            <hr class="my-4">
-            <a class="btn btn-sm btn-warning" href="#" role="button">
-                <i class="fas fa-pen"></i> Modifier la fiche
-            </a>
-            <a class="btn btn-sm btn-danger" href="#" role="button">
-                <i class="fas fa-trash"></i> Supprimer le contact
-            </a>
-            <a class="btn btn-sm btn-primary" href="/contacts" role="button">
-                <i class="fas fa-users"></i> Retourner aux contacts
-            </a>
-        </div>
+        {{> flash }}
+        {{#with contact }}
+            <div class="jumbotron mt-4">
+                <h1 class="display-4">{{prenom}} {{nom}}</h1>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-8">
+                            <p class="lead">Email : <strong>{{email}}</strong></p>
+                            <p class="lead">Téléphone : <strong>{{tel}}</strong></p>
+                        </div>
+                        <div class="col-4">
+                            <img class="text-center float-right" src="{{qrcode}}" alt="vCard QrCode">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <a class="btn btn-sm btn-warning" href="/contact/{{_id}}/edit" role="button">
+                    <i class="fas fa-pen"></i> Modifier la fiche
+                </a>
+                <a class="btn btn-sm btn-danger" href="/contact/{{_id}}/delete" role="button">
+                    <i class="fas fa-trash"></i> Supprimer le contact
+                </a>
+                <a class="btn btn-sm btn-primary" href="/contacts" role="button">
+                    <i class="fas fa-users"></i> Retourner aux contacts
+                </a>
+            </div>
+        {{/with}}
     </div>
 </div>

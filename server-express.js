@@ -71,6 +71,29 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
 /**
+ * Configuration des sessions avec Express
+ * https://gist.github.com/brianmacarthur/a4e3e0093d368aa8e423
+ * https://www.npmjs.com/package/cookie-parser
+ * https://www.npmjs.com/package/express-session
+ */
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+app.use(cookieParser());
+app.use(session({
+    secret: 'contact-app',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+}));
+
+// Configuration des notifications flash
+app.use((req, res, next) => {
+    res.locals.sessionFlash = req.session.sessionFlash;
+    delete req.session.sessionFlash;
+    next();
+});
+
+/**
  * Permet de gérer l'affichage de nos assets
  * https://expressjs.com/fr/starter/static-files.html
  */
