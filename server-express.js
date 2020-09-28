@@ -1,4 +1,10 @@
 /**
+ * Chargement des variables d'environnements
+ */
+const dotenv = require('dotenv');
+dotenv.config({ path: '.env' });
+
+/**
  * Importe le Framework Express
  */
 const express = require('express');
@@ -8,7 +14,7 @@ const express = require('express');
  * @type {*|Express}
  */
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 /**
  * Configuration du Templating avec Handlebar
@@ -63,7 +69,7 @@ app.use(bodyParser.urlencoded({extended: false}));
  * @type {Mongoose}
  */
 const mongoose = require('mongoose');
-const mongoDB = 'mongodb://127.0.0.1/contacts';
+const mongoDB = process.env.MONGODB_URI;
 mongoose.connect(mongoDB, {useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true});
 
 // -- Récupération de la connexion par défaut et Gestion des erreurs
@@ -80,7 +86,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 app.use(cookieParser());
 app.use(session({
-    secret: 'contact-app',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }
@@ -104,7 +110,9 @@ app.use('/public',
  * Mise en Place du Routage
  */
 const appRouter = require('./src/routes/app-routes');
+const apiRouter = require('./src/routes/api-routes');
 app.use('/', appRouter);
+app.use('/api', apiRouter);
 
 /** Gestion des erreurs 404 **/
 app.use(function(req, res, next) {
